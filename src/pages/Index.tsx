@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, Zap, Eye, Brain, RotateCcw, Github } from 'lucide-react';
+import { Shield, Zap, Eye, Brain, RotateCcw } from 'lucide-react';
 import { ImageUploader } from '@/components/ImageUploader';
 import { AnalysisResult } from '@/components/AnalysisResult';
 import { ScanningOverlay } from '@/components/ScanningOverlay';
@@ -90,20 +90,15 @@ const Index = () => {
         {/* Header */}
         <header className="border-b border-border/50">
           <div className="container max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-primary/20 glow-cyan">
-                <Shield className="w-6 h-6 text-primary" />
+            <a href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+              <div className="p-1 rounded-full bg-primary/20 glow-cyan">
+                <img src="/logo.png" alt="DeepTrust Logo" className="w-8 h-8 object-contain" />
               </div>
               <div>
-                <h1 className="font-bold text-lg text-foreground">AuthentiScan</h1>
+                <h1 className="font-bold text-lg text-foreground">DeepTrust</h1>
                 <p className="text-xs text-muted-foreground">AI Image Detector</p>
               </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-mono text-muted-foreground px-3 py-1 rounded-full bg-muted">
-                v1.0 BETA
-              </span>
-            </div>
+            </a>
           </div>
         </header>
 
