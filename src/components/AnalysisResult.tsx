@@ -19,49 +19,49 @@ export function AnalysisResult({ confidence, verdict, signals, summary }: Analys
   const getVerdictConfig = () => {
     switch (verdict) {
       case 'AI_GENERATED':
-        return { 
-          icon: XCircle, 
-          color: 'text-destructive', 
-          bg: 'bg-destructive/20', 
-          border: 'border-destructive/50',
+        return {
+          icon: XCircle,
+          color: 'text-destructive',
+          bg: 'bg-destructive/10',
+          border: 'border-destructive/30',
           label: 'AI Generated',
-          glow: 'shadow-[0_0_30px_hsl(0_85%_60%/0.3)]'
+          glow: 'shadow-[0_0_20px_hsl(0_85%_55%/0.2)]'
         };
       case 'LIKELY_AI':
-        return { 
-          icon: AlertTriangle, 
-          color: 'text-warning', 
-          bg: 'bg-warning/20', 
-          border: 'border-warning/50',
+        return {
+          icon: AlertTriangle,
+          color: 'text-warning',
+          bg: 'bg-warning/10',
+          border: 'border-warning/30',
           label: 'Likely AI',
-          glow: 'shadow-[0_0_30px_hsl(35_100%_55%/0.3)]'
+          glow: 'shadow-[0_0_20px_hsl(35_100%_50%/0.2)]'
         };
       case 'UNCERTAIN':
-        return { 
-          icon: HelpCircle, 
-          color: 'text-muted-foreground', 
-          bg: 'bg-muted', 
+        return {
+          icon: HelpCircle,
+          color: 'text-muted-foreground',
+          bg: 'bg-muted',
           border: 'border-border',
           label: 'Uncertain',
           glow: ''
         };
       case 'LIKELY_REAL':
-        return { 
-          icon: Shield, 
-          color: 'text-primary', 
-          bg: 'bg-primary/20', 
-          border: 'border-primary/50',
+        return {
+          icon: Shield,
+          color: 'text-primary',
+          bg: 'bg-primary/10',
+          border: 'border-primary/30',
           label: 'Likely Real',
-          glow: 'shadow-[0_0_30px_hsl(180_100%_50%/0.3)]'
+          glow: 'shadow-[0_0_20px_hsl(250_90%_55%/0.2)]'
         };
       case 'REAL':
-        return { 
-          icon: CheckCircle, 
-          color: 'text-success', 
-          bg: 'bg-success/20', 
-          border: 'border-success/50',
+        return {
+          icon: CheckCircle,
+          color: 'text-success',
+          bg: 'bg-success/10',
+          border: 'border-success/30',
           label: 'Authentic',
-          glow: 'shadow-[0_0_30px_hsl(145_80%_45%/0.3)]'
+          glow: 'shadow-[0_0_20px_hsl(145_80%_40%/0.2)]'
         };
     }
   };

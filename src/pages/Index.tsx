@@ -74,13 +74,13 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Background grid effect */}
-      <div 
-        className="fixed inset-0 opacity-30 pointer-events-none"
+      <div
+        className="fixed inset-0 opacity-40 pointer-events-none"
         style={{
           backgroundImage: `
-            radial-gradient(circle at 50% 50%, hsl(180 100% 50% / 0.03) 0%, transparent 50%),
-            linear-gradient(hsl(180 100% 50% / 0.02) 1px, transparent 1px),
-            linear-gradient(90deg, hsl(180 100% 50% / 0.02) 1px, transparent 1px)
+            radial-gradient(circle at 50% 50%, hsl(250 90% 55% / 0.05) 0%, transparent 50%),
+            linear-gradient(hsl(250 90% 55% / 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, hsl(250 90% 55% / 0.03) 1px, transparent 1px)
           `,
           backgroundSize: '100% 100%, 50px 50px, 50px 50px',
         }}
