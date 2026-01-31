@@ -46,13 +46,13 @@ export function AnalysisResult({ confidence, verdict, signals, summary }: Analys
           glow: ''
         };
       case 'LIKELY_REAL':
-        return { 
-          icon: Shield, 
-          color: 'text-primary', 
-          bg: 'bg-primary/20', 
+        return {
+          icon: Shield,
+          color: 'text-primary',
+          bg: 'bg-primary/20',
           border: 'border-primary/50',
           label: 'Likely Real',
-          glow: 'shadow-[0_0_30px_hsl(180_100%_50%/0.3)]'
+          glow: 'shadow-[0_0_30px_hsl(262_83%_58%/0.3)]'
         };
       case 'REAL':
         return { 

@@ -93,8 +93,8 @@ export function ImageUploader({ onImageSelected, isAnalyzing }: ImageUploaderPro
           onDragOver={handleDrag}
           onDrop={handleDrop}
           className={`relative border-2 border-dashed rounded-xl p-12 transition-all duration-300 ${
-            dragActive 
-              ? 'border-primary bg-primary/10 glow-cyan' 
+            dragActive
+              ? 'border-primary bg-primary/10 glow-purple'
               : 'border-border hover:border-primary/50 hover:bg-muted/50'
           } ${isAnalyzing ? 'pointer-events-none opacity-50' : 'cursor-pointer'}`}
         >

@@ -74,13 +74,13 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Background grid effect */}
-      <div 
+      <div
         className="fixed inset-0 opacity-30 pointer-events-none"
         style={{
           backgroundImage: `
-            radial-gradient(circle at 50% 50%, hsl(180 100% 50% / 0.03) 0%, transparent 50%),
-            linear-gradient(hsl(180 100% 50% / 0.02) 1px, transparent 1px),
-            linear-gradient(90deg, hsl(180 100% 50% / 0.02) 1px, transparent 1px)
+            radial-gradient(circle at 50% 50%, hsl(262 83% 58% / 0.03) 0%, transparent 50%),
+            linear-gradient(hsl(262 83% 58% / 0.02) 1px, transparent 1px),
+            linear-gradient(90deg, hsl(262 83% 58% / 0.02) 1px, transparent 1px)
           `,
           backgroundSize: '100% 100%, 50px 50px, 50px 50px',
         }}
@@ -91,7 +91,7 @@ const Index = () => {
         <header className="border-b border-border/50">
           <div className="container max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
             <a href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-              <div className="p-1 rounded-full bg-primary/20 glow-cyan">
+              <div className="p-1 rounded-full bg-primary/20 glow-purple">
                 <img src="/logo.png" alt="DeepTrust Logo" className="w-8 h-8 object-contain" />
               </div>
               <div>

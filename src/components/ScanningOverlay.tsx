@@ -23,17 +23,17 @@ export function ScanningOverlay({ isScanning }: ScanningOverlayProps) {
         }}
         className="absolute left-0 right-0 h-1 bg-gradient-to-b from-transparent via-primary to-transparent"
         style={{
-          boxShadow: '0 0 40px 20px hsl(180 100% 50% / 0.4)',
+          boxShadow: '0 0 40px 20px hsl(262 83% 58% / 0.4)',
         }}
       />
 
       {/* Grid overlay */}
-      <div 
+      <div
         className="absolute inset-0 opacity-20"
         style={{
           backgroundImage: `
-            linear-gradient(hsl(180 100% 50% / 0.1) 1px, transparent 1px),
-            linear-gradient(90deg, hsl(180 100% 50% / 0.1) 1px, transparent 1px)
+            linear-gradient(hsl(262 83% 58% / 0.1) 1px, transparent 1px),
+            linear-gradient(90deg, hsl(262 83% 58% / 0.1) 1px, transparent 1px)
           `,
           backgroundSize: '20px 20px',
         }}
