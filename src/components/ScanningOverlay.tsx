@@ -10,8 +10,8 @@ export function ScanningOverlay({ isScanning }: ScanningOverlayProps) {
   return (
     <div className="absolute inset-0 overflow-hidden rounded-xl">
       {/* Dark overlay */}
-      <div className="absolute inset-0 bg-background/60 backdrop-blur-sm" />
-      
+      <div className="absolute inset-0 bg-white/70 backdrop-blur-sm" />
+
       {/* Scanning line */}
       <motion.div
         initial={{ y: '-100%' }}
@@ -23,17 +23,17 @@ export function ScanningOverlay({ isScanning }: ScanningOverlayProps) {
         }}
         className="absolute left-0 right-0 h-1 bg-gradient-to-b from-transparent via-primary to-transparent"
         style={{
-          boxShadow: '0 0 40px 20px hsl(180 100% 50% / 0.4)',
+          boxShadow: '0 0 30px 15px hsl(250 90% 55% / 0.3)',
         }}
       />
 
       {/* Grid overlay */}
-      <div 
-        className="absolute inset-0 opacity-20"
+      <div
+        className="absolute inset-0 opacity-30"
         style={{
           backgroundImage: `
-            linear-gradient(hsl(180 100% 50% / 0.1) 1px, transparent 1px),
-            linear-gradient(90deg, hsl(180 100% 50% / 0.1) 1px, transparent 1px)
+            linear-gradient(hsl(250 90% 55% / 0.15) 1px, transparent 1px),
+            linear-gradient(90deg, hsl(250 90% 55% / 0.15) 1px, transparent 1px)
           `,
           backgroundSize: '20px 20px',
         }}
