@@ -89,8 +89,8 @@ const Index = () => {
       <div className="relative z-10">
         {/* Header */}
         <header className="border-b border-border/50">
-          <div className="container max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-            <a href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+          <div className="container max-w-6xl mx-auto px-4 md:px-4 py-4 flex items-center justify-start md:justify-between">
+            <a href="https://deeptrust-nine.vercel.app/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
               <div className="p-1 rounded-full bg-primary/20 glow-cyan">
                 <img src="/logo.png" alt="DeepTrust Logo" className="w-8 h-8 object-contain" />
               </div>
@@ -205,7 +205,7 @@ const Index = () => {
           <div className="container max-w-6xl mx-auto px-4 py-8">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
               <p className="text-sm text-muted-foreground">
-                Built for hackathon with ❤️ • Powered by multimodal AI
+                © 2026 DeepTrust. All rights reserved.
               </p>
               <div className="flex items-center gap-4">
                 <span className="text-xs text-muted-foreground">
