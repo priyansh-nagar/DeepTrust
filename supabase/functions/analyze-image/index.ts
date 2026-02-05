@@ -87,7 +87,7 @@ serve(async (req) => {
       }
       if (response.status === 402) {
         return new Response(
-          JSON.stringify({ error: 'Usage limit reached. Please add credits to continue.' }),
+          JSON.stringify({ error: 'We're currently handling a high volume of requests. Please try again in a moment.' }),
           { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
