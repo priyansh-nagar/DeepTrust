@@ -27,37 +27,19 @@ serve(async (req) => {
     if (!HUGGINGFACE_TOKEN) throw new Error("Hugging Face token not set");
 
     // Call Hugging Face CLIP model
-    const hfResponse = await fetch(
-      "https://api-inference.huggingface.co/models/openai/clip-vit-base-patch32",
-      {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${HUGGINGFACE_TOKEN}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          inputs: imageInput
-        }),
+  const hfResponse = await fetch(
+  "https://api-inference.huggingface.co/models/openai/clip-vit-base-patch32",
+  {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${Deno.env.get("HUGGINGFACE_TOKEN")}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      inputs: {
+        image: imageContent,  // base64 string or public URL
+        text: ["AI-generated image", "Real photograph"]
       }
-    );
-
-    if (!hfResponse.ok) {
-      const text = await hfResponse.text();
-      throw new Error(`HF API error: ${hfResponse.status} ${text}`);
-    }
-
-    const result = await hfResponse.json();
-
-    return new Response(JSON.stringify({ result }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-
-  } catch (error) {
-    console.error(error);
-    return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : "Analysis failed" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    }),
   }
-});
-
+);
