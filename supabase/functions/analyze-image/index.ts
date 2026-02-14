@@ -57,7 +57,7 @@ serve(async (req) => {
       };
     }
 
-    Deno.env.get("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")
+    Deno.env.get("HUGGINGFACE_TOKEN")
 
 const hfResponse = await fetch(
   "https://api-inference.huggingface.co/models/facebook/bart-large-mnli",
