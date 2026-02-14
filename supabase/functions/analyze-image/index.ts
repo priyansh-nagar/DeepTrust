@@ -11,60 +11,53 @@ serve(async (req) => {
   }
 
   try {
-    const { imageUrl, imageBase64 } = await req.json();
+    const { imageBase64, imageUrl } = await req.json();
 
-    if (!imageUrl && !imageBase64) {
+    if (!imageBase64 && !imageUrl) {
       return new Response(
         JSON.stringify({ error: "Please provide imageBase64 or imageUrl" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
+    const imageInput = imageBase64 || imageUrl;
+
+    // Read the secret token
     const HUGGINGFACE_TOKEN = Deno.env.get("HUGGINGFACE_TOKEN");
-    if (!HUGGINGFACE_TOKEN) {
-      return new Response(
-        JSON.stringify({ error: "HUGGINGFACE_TOKEN is not set in environment variables" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
+    if (!HUGGINGFACE_TOKEN) throw new Error("Hugging Face token not set");
 
-    const payload = imageBase64 || imageUrl; // Hugging Face can accept either
-
+    // Call Hugging Face CLIP model
     const hfResponse = await fetch(
-      "https://api-inference.huggingface.co/models/facebook/bart-large-mnli",
+      "https://api-inference.huggingface.co/models/openai/clip-vit-base-patch32",
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${HUGGINGFACE_TOKEN}`,
+          "Authorization": `Bearer ${HUGGINGFACE_TOKEN}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          inputs: "This image appears to be: " + payload,
-          parameters: {
-            candidate_labels: ["AI-generated image", "Real photograph"],
-          },
+          inputs: imageInput
         }),
       }
     );
 
     if (!hfResponse.ok) {
-      const errText = await hfResponse.text();
-      return new Response(
-        JSON.stringify({ error: `Hugging Face API failed: ${errText}` }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      const text = await hfResponse.text();
+      throw new Error(`HF API error: ${hfResponse.status} ${text}`);
     }
 
     const result = await hfResponse.json();
 
-    return new Response(JSON.stringify(result), {
+    return new Response(JSON.stringify({ result }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
 
   } catch (error) {
+    console.error(error);
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : "Unknown error" }),
+      JSON.stringify({ error: error instanceof Error ? error.message : "Analysis failed" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
 });
+
