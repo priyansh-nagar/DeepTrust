@@ -21,9 +21,7 @@ serve(async (req) => {
   }
 
   try {
-    console.log("[v0] Received request, parsing JSON...");
     const { imageBase64, imageUrl } = await req.json();
-    console.log("[v0] Request parsed. Has base64:", !!imageBase64, "Has URL:", !!imageUrl);
 
     if (!imageBase64 && !imageUrl) {
       return new Response(
@@ -34,7 +32,6 @@ serve(async (req) => {
 
     // Read the secret token
     const HUGGINGFACE_TOKEN = Deno.env.get("HUGGINGFACE_TOKEN");
-    console.log("[v0] HF Token present:", !!HUGGINGFACE_TOKEN);
     if (!HUGGINGFACE_TOKEN) throw new Error("Hugging Face token not set");
 
     // Prepare request body - Hugging Face expects raw binary image data
