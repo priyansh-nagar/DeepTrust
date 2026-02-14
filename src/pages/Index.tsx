@@ -26,45 +26,43 @@ const Index = () => {
   const { toast } = useToast();
 
   const handleImageSelected = async (imageData: { url?: string; base64?: string; preview: string }) => {
-    setSelectedImage(imageData);
-    setAnalysisResult(null);
-    await analyzeImage(imageData);
-  };
+  setSelectedImage(imageData);
+  setAnalysisResult(null);
+  await analyzeImage(imageData);
+};
 
-  const analyzeImage = async (imageData: { url?: string; base64?: string }) => {
-    setIsAnalyzing(true);
-    
-    try {
-      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/analyze-image`, {
-        method: 'POST',
+const analyzeImage = async (imageData: { url?: string; base64?: string }) => {
+  try {
+    const response = await fetch(
+      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/analyze-image`,
+      {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
         },
         body: JSON.stringify({
           imageUrl: imageData.url,
           imageBase64: imageData.base64,
         }),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Analysis failed');
       }
+    );
 
-      const result = await response.json();
-      setAnalysisResult(result);
-    } catch (error) {
-      console.error('Analysis error:', error);
-      toast({
-        title: 'Analysis Failed',
-        description: error instanceof Error ? error.message : 'Failed to analyze image',
-        variant: 'destructive',
-      });
-    } finally {
-      setIsAnalyzing(false);
+    if (!response.ok) {
+      throw new Error("Analysis failed");
     }
-  };
+
+    const result = await response.json();
+    setAnalysisResult(result);
+  } catch (error) {
+    console.error(error);
+    setAnalysisResult({ error: error instanceof Error ? error.message : "Analysis failed" });
+  }
+};
+
+
+  
 
   const resetAnalysis = () => {
     setSelectedImage(null);
