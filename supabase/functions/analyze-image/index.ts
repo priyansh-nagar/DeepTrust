@@ -62,74 +62,40 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+  const hfResponse = await fetch(
+  "https://api-inference.huggingface.co/models/openai/clip-vit-base-patch32",
+  {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${Deno.env.get("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")}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      inputs: {
+        image: imageContent,
+        candidate_labels: ["AI-generated image", "Real photograph"],
       },
-      body: JSON.stringify({
-        model: 'google/gemini-2.5-flash-lite',
-        messages: [
-          { role: 'system', content: SYSTEM_PROMPT },
-          {
-            role: 'user',
-            content: [
-              { type: 'text', text: 'Analyze this image for AI generation indicators. Respond with valid JSON only.' },
-              imageContent
-            ]
-          }
-        ],
-        response_format: { type: "json_object" }
-      }),
-    });
-
-    if (!response.ok) {
-      if (response.status === 429) {
-        return new Response(
-          JSON.stringify({ error: "We're currently handling a high volume of requests. Please try again in a moment." }),
-          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-      if (response.status === 402) {
-        return new Response(
-          JSON.stringify({ error: "Usage limit reached. Please add credits to continue." }),
-          { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-      const errorText = await response.text();
-      console.error('AI Gateway error:', response.status, errorText);
-      throw new Error('Failed to analyze image');
-    }
-
-    const data = await response.json();
-    const content = data.choices?.[0]?.message?.content;
-    
-    if (!content) {
-      throw new Error('No analysis received from AI');
-    }
-
-    // Parse the JSON response
-    let analysis;
-    try {
-      // Clean up the response if needed
-      const cleanContent = content.replace(/```json\n?|\n?```/g, '').trim();
-      analysis = JSON.parse(cleanContent);
-    } catch (e) {
-      console.error('Failed to parse AI response:', content);
-      throw new Error('Failed to parse analysis results');
-    }
-
-    return new Response(
-      JSON.stringify(analysis),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
-
-  } catch (error) {
-    console.error('Analysis error:', error);
-    return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : 'Analysis failed' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    }),
   }
-});
+);
+
+if (!hfResponse.ok) {
+  throw new Error("Hugging Face API error");
+}
+
+const result = await hfResponse.json();
+
+const top = result[0];
+
+const analysis = {
+  verdict:
+    top.label === "AI-generated image" ? "AI Generated" : "Real",
+  confidence: Math.round(top.score * 100),
+  signals: [],
+  summary: "Detection powered by Hugging Face model",
+};
+
+return new Response(
+  JSON.stringify(analysis),
+  { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+);
