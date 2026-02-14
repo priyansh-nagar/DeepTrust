@@ -58,20 +58,52 @@ serve(async (req) => {
     }
 
     Deno.env.get("HUGGINGFACE_TOKEN")
+    import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
-const hfResponse = await fetch(
-  "https://api-inference.huggingface.co/models/facebook/bart-large-mnli",
-  {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${Deno.env.get("HUGGINGFACE_TOKEN")}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      inputs: "This image appears to be " + imageContent,
-      parameters: {
-        candidate_labels: ["AI-generated image", "Real photograph"],
-      },
-    }),
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
+
+serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
   }
-);
+
+  try {
+    const { imageUrl, imageBase64 } = await req.json();
+
+    const imageContent = imageBase64 || imageUrl;
+
+    const hfResponse = await fetch(
+      "https://api-inference.huggingface.co/models/facebook/bart-large-mnli",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${Deno.env.get("HUGGINGFACE_TOKEN")}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          inputs: "This image appears to be " + imageContent,
+          parameters: {
+            candidate_labels: ["AI-generated image", "Real photograph"],
+          },
+        }),
+      }
+    );
+
+    const result = await hfResponse.json();
+
+    return new Response(JSON.stringify(result), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  } catch (error) {
+    console.error(error);
+    return new Response(JSON.stringify({ error: error instanceof Error ? error.message : "Analysis failed" }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      status: 500,
+    });
+  }
+});
+
+
