@@ -31,9 +31,10 @@ serve(async (req) => {
     }
 
     // Read the secret token
-    const HUGGINGFACE_TOKEN = Deno.env.get("HUGGINGFACE_TOKEN");
-    if (!HUGGINGFACE_TOKEN) throw new Error("Hugging Face token not set");
-
+    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+if (!LOVABLE_API_KEY) {
+  throw new Error("LOVABLE_API_KEY is not configured");
+}
     // Prepare request body - Hugging Face expects raw binary image data
     let requestBody: string | ArrayBuffer;
     
@@ -53,86 +54,79 @@ serve(async (req) => {
     }
 
     // Call Hugging Face model for AI detection
-    const hfResponse = await fetch(
-      "https://api-inference.huggingface.co/models/Falconsai/nsfw_image_detection",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${HUGGINGFACE_TOKEN}`,
-        },
-        body: requestBody,
-      }
-    );
-
-    if (!hfResponse.ok) {
-      const errorText = await hfResponse.text();
-      throw new Error(`Hugging Face API error (${hfResponse.status}): ${errorText}`);
+    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    if (!LOVABLE_API_KEY) {
+      throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    const hfResult = await hfResponse.json();
+    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': Bearer ${LOVABLE_API_KEY},
+      },
+      body: JSON.stringify({
+        model: 'google/gemini-2.5-flash-lite',
+        messages: [
+          { role: 'system', content: SYSTEM_PROMPT },
+          {
+            role: 'user',
+            content: [
+              { type: 'text', text: 'Analyze this image for AI generation indicators. Respond with valid JSON only.' },
+              imageContent
+            ]
+          }
+        ],
+        response_format: { type: "json_object" }
+      }),
+    });
 
-    // Process the model output - handle various response formats
-    let aiScore = 0.5;
-    let realScore = 0.5;
+    if (!response.ok) {
+      if (response.status === 429) {
+        return new Response(
+          JSON.stringify({ error: "We're currently handling a high volume of requests. Please try again in a moment." }),
+          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      if (response.status === 402) {
+        return new Response(
+          JSON.stringify({ error: "Usage limit reached. Please add credits to continue." }),
+          { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      const errorText = await response.text();
+      console.error('AI Gateway error:', response.status, errorText);
+      throw new Error('Failed to analyze image');
+    }
+
+    const data = await response.json();
+    const content = data.choices?.[0]?.message?.content;
     
-    if (Array.isArray(hfResult) && hfResult.length > 0) {
-      // Response is an array of classifications
-      const classifications = hfResult as Array<{ label: string; score: number }>;
-      
-      // Look for AI-related labels
-      const aiLabel = classifications.find(c => 
-        c.label.toLowerCase().includes('ai') || 
-        c.label.toLowerCase().includes('generated') ||
-        c.label.toLowerCase().includes('fake')
-      );
-      
-      if (aiLabel) {
-        aiScore = aiLabel.score;
-        realScore = 1 - aiScore;
-      } else {
-        // Default to first result
-        aiScore = classifications[0]?.score || 0.5;
-        realScore = 1 - aiScore;
-      }
+    if (!content) {
+      throw new Error('No analysis received from AI');
     }
 
-    // Determine verdict based on scores
-    let verdict: 'AI_GENERATED' | 'LIKELY_AI' | 'UNCERTAIN' | 'LIKELY_REAL' | 'REAL';
-    if (aiScore > 0.7) verdict = 'AI_GENERATED';
-    else if (aiScore > 0.55) verdict = 'LIKELY_AI';
-    else if (realScore > 0.7) verdict = 'REAL';
-    else if (realScore > 0.55) verdict = 'LIKELY_REAL';
-    else verdict = 'UNCERTAIN';
-
-    const analysisResult = {
-      confidence: Math.max(aiScore, realScore),
-      verdict,
-      signals: [
-        {
-          name: "AI Pattern Detection",
-          detected: aiScore > 0.5,
-          severity: aiScore > 0.7 ? 'high' : aiScore > 0.5 ? 'medium' : 'low',
-          description: `CLIP model detected ${(aiScore * 100).toFixed(1)}% AI-generated characteristics`
-        },
-        {
-          name: "Authenticity Score",
-          detected: realScore > 0.5,
-          severity: realScore > 0.7 ? 'high' : realScore > 0.5 ? 'medium' : 'low',
-          description: `${(realScore * 100).toFixed(1)}% authenticity indicators detected`
-        }
-      ],
-      summary: `Based on multimodal AI analysis, this image is ${verdict.replace(/_/g, ' ').toLowerCase()}. Confidence: ${(Math.max(aiScore, realScore) * 100).toFixed(1)}%`
-    };
+    // Parse the JSON response
+    let analysis;
+    try {
+      // Clean up the response if needed
+      const cleanContent = content.replace(/json\n?|\n?/g, '').trim();
+      analysis = JSON.parse(cleanContent);
+    } catch (e) {
+      console.error('Failed to parse AI response:', content);
+      throw new Error('Failed to parse analysis results');
+    }
 
     return new Response(
-      JSON.stringify(analysisResult),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      JSON.stringify(analysis),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
+
   } catch (error) {
-    console.error("Error:", error);
+    console.error('Analysis error:', error);
     return new Response(
-      JSON.stringify({ error: error.message || "Analysis failed" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      JSON.stringify({ error: error instanceof Error ? error.message : 'Analysis failed' }),
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
 });
