@@ -59,40 +59,19 @@ serve(async (req) => {
 
     Deno.env.get("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")
 
-  const hfResponse = await fetch(
-  "https://api-inference.huggingface.co/models/openai/clip-vit-base-patch32",
+const hfResponse = await fetch(
+  "https://api-inference.huggingface.co/models/facebook/bart-large-mnli",
   {
     method: "POST",
     headers: {
-      "Authorization": `Bearer ${Deno.env.get("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")}`,
+      Authorization: `Bearer ${Deno.env.get("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")}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      inputs: {
-        image: imageContent,
+      inputs: "This image appears to be " + imageContent,
+      parameters: {
         candidate_labels: ["AI-generated image", "Real photograph"],
       },
     }),
   }
-);
-
-if (!hfResponse.ok) {
-  throw new Error("Hugging Face API error");
-}
-
-const result = await hfResponse.json();
-
-const top = result[0];
-
-const analysis = {
-  verdict:
-    top.label === "AI-generated image" ? "AI Generated" : "Real",
-  confidence: Math.round(top.score * 100),
-  signals: [],
-  summary: "Detection powered by Hugging Face model",
-};
-
-return new Response(
-  JSON.stringify(analysis),
-  { headers: { ...corsHeaders, "Content-Type": "application/json" } }
 );
