@@ -64,7 +64,7 @@ const hfResponse = await fetch(
   {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${Deno.env.get("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")}`,
+      Authorization: `Bearer ${Deno.env.get("HUGGINGFACE_TOKEN")}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
