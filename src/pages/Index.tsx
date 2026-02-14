@@ -40,7 +40,6 @@ const Index = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
         body: JSON.stringify({
           imageUrl: imageData.url,
@@ -49,7 +48,13 @@ const Index = () => {
       });
 
       if (!response.ok) {
-        const err = await response.json().catch(() => ({ error: 'Analysis failed' }));
+        const errorText = await response.text();
+        let err;
+        try {
+          err = JSON.parse(errorText);
+        } catch {
+          err = { error: errorText || 'Analysis failed' };
+        }
         throw new Error(err.error || 'Analysis failed');
       }
 
