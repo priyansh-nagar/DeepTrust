@@ -57,10 +57,7 @@ serve(async (req) => {
       };
     }
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) {
-      throw new Error("LOVABLE_API_KEY is not configured");
-    }
+    Deno.env.get("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")
 
   const hfResponse = await fetch(
   "https://api-inference.huggingface.co/models/openai/clip-vit-base-patch32",
